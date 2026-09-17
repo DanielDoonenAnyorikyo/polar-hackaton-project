@@ -8,6 +8,7 @@ interface Product {
   title: string;
   price: number;
   image: string;
+  polarProductId: string; // Mapped to your actual Polar product IDs
 }
 
 interface CartItem {
@@ -21,24 +22,28 @@ const PRODUCTS: Product[] = [
     title: 'Field Notes Notebook',
     price: 2499,
     image: '/products/field-notes.png',
+    polarProductId: 'eb3d700b-b46f-4bdc-a30b-aeee634557d9',
   },
   {
     id: 'ceramic-cup',
     title: 'Ceramic Coffee Cup',
     price: 3499,
     image: '/products/ceramic-cup.png',
+    polarProductId: '03fcf2e6-bb8c-448f-82d3-2c65ac62d114',
   },
   {
     id: 'canvas-tote',
     title: 'Canvas Tote Bag',
     price: 5999,
     image: '/products/canvas-tote.png',
+    polarProductId: 'eb3d700b-b46f-4bdc-a30b-aeee634557d9', // fallback or map as needed
   },
   {
     id: 'desk-lamp',
     title: 'Desk Lamp',
     price: 12999,
     image: '/products/desk-lamp.png',
+    polarProductId: '03fcf2e6-bb8c-448f-82d3-2c65ac62d114', // fallback or map as needed
   },
 ];
 
@@ -96,11 +101,14 @@ export default function Home() {
     if (cart.length === 0) return;
     setIsCheckingOut(true);
     try {
+      // Pick the product ID of the first item in the cart or default to your primary product ID
+      const activeProductId = cart[0]?.product.polarProductId || 'eb3d700b-b46f-4bdc-a30b-aeee634557d9';
+
       const response = await fetch('/api/polar/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productId: '7f9b4691-7146-4520-8d9b-4d4961551255',
+          productId: activeProductId,
           amount: cartTotal,
           items: cart.map((item) => ({
             id: item.product.id,
