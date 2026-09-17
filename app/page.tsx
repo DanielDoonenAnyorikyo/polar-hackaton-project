@@ -92,16 +92,15 @@ export default function Home() {
     setCart((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
-const handleCheckout = async () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) return;
     setIsCheckingOut(true);
     try {
-      // Use your active Polar Sandbox Product ID
       const response = await fetch('/api/polar/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productId: '7f9b4691-7146-4520-8d9b-4d4961551255', // Your working sandbox product UUID
+          productId: '7f9b4691-7146-4520-8d9b-4d4961551255',
           amount: cartTotal,
           items: cart.map((item) => ({
             id: item.product.id,
@@ -113,8 +112,6 @@ const handleCheckout = async () => {
       });
 
       const data = await response.json();
-      
-      // Support both url or checkoutUrl response keys from the backend
       const redirectUrl = data.url || data.checkoutUrl;
 
       if (redirectUrl) {
@@ -122,20 +119,6 @@ const handleCheckout = async () => {
       } else {
         console.error('Checkout API Error:', data);
         alert(`Failed to create checkout session: ${data.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('An error occurred during checkout.');
-    } finally {
-      setIsCheckingOut(false);
-    }
-  };
-
-      const data = await response.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        alert('Failed to create checkout session.');
       }
     } catch (error) {
       console.error('Checkout error:', error);
